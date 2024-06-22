@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CircuitPlaygroundApp.Controls"
+             Title="Controls">
+    <VerticalStackLayout>
+        <Label 
+            x:Name="DataLbl"
+            Text="Welcome to .NET MAUI!"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center" />
+        
+        <Button
+                x:Name="ScanBtn"
+                Text="Scan" 
+                SemanticProperties.Hint="Start scanning"
+                Clicked="OnScanClicked"
+                HorizontalOptions="Fill" />
+        <Label 
+                x:Name="DevicesLbl"
+                Text=" Devices " />
+        <Label 
+                x:Name="StateLbl"
+                Text="Disconnected" />
+    </VerticalStackLayout>
+</ContentPage>
