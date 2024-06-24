@@ -51,24 +51,28 @@ public partial class Controls : ContentPage
                 adapter.DeviceDiscovered += (s, a) => deviceList.Add(a.Device);
                 adapter.ScanTimeout = 10000;
                 await adapter.StartScanningForDevicesAsync();
+                StateLbl.Text = "Scan done";
 
                 foreach (IDevice dev in deviceList)
                 {
-                    if (dev.Name.Contains("Mosquito"))
+                    if (dev.Name.Contains("Playground"))
                     {
+                        //await adapter.StopScanningForDevicesAsync(dev);
+
                         DevicesLbl.Text = dev.Name;
                         await adapter.ConnectToDeviceAsync(dev);
                         StateLbl.Text = "Connected";
 
                         // "4A98aaaa-1CC4-E7C1-C757-F1267DD021E8" from Franklin code
-                        var service = await dev.GetServiceAsync(Guid.Parse("4A98aaaa-1CC4-E7C1-C757-F1267DD021E8"));
-                        var characteristic = await service.GetCharacteristicAsync(Guid.Parse("4A98aaaa-1CC4-E7C1-C757-F1267DD021E8"));
+                        string guid = "11f836a0-5da3-4bba-815e-d55d2d1c08bc";
+                        var service = await dev.GetServiceAsync(Guid.Parse(guid));
+                        var characteristic = await service.GetCharacteristicAsync(Guid.Parse(guid));
                         characteristic.ValueUpdated += (o, args) =>
                         {
                             MainThread.BeginInvokeOnMainThread(() =>
                             {
                                 byte[] v = args.Characteristic.Value;
-                                DataLbl.Text = System.Text.Encoding.ASCII.GetString(v);
+                                DataLbl.Text = String.Format("Light intensity {0}", System.Text.Encoding.ASCII.GetString(v));
                             });
                         };
 
@@ -87,6 +91,6 @@ public partial class Controls : ContentPage
     }
     private async void OnScanClicked(object sender, EventArgs e)
     {
-        Connect();
+         Connect();
     }
 }

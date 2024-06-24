@@ -24,6 +24,7 @@ from adafruit_ble.advertising.standard import ProvideServicesAdvertisement
 from adafruit_ble.uuid import VendorUUID
 from adafruit_ble.services import Service
 from adafruit_ble.characteristics import Characteristic
+from adafruit_ble.characteristics.string import StringCharacteristic
 from adafruit_ble.characteristics.json import JSONCharacteristic
 
 #############################################  U S E R  A D J U S T M E N T S #############################
@@ -36,9 +37,11 @@ BRIGHTNESS = 0.7
 NUM_PIXELS = 10
 
 class SensorService(Service):
-    uuid = VendorUUID("4A98aaaa-1CC4-E7C1-C757-F1267DD021E8")
-    sensors = JSONCharacteristic(
-        uuid=VendorUUID("4A98aaaa-1CC4-E7C1-C757-F1267DD021E8"),
+
+    #uuid = VendorUUID("4A98aaaa-1CC4-E7C1-C757-F1267DD021E8")
+    uuid = VendorUUID("11f836a0-5da3-4bba-815e-d55d2d1c08bc")
+    sensor = StringCharacteristic(
+        uuid=VendorUUID("11f836a0-5da3-4bba-815e-d55d2d1c08bc"),
         properties = Characteristic.READ | Characteristic.NOTIFY,
     )
     def __init__(self, service=None):
@@ -66,9 +69,8 @@ service = SensorService()
 
 # Advertising config
 myAdvertisement = ProvideServicesAdvertisement(service)
-myAdvertisement.short_name = "Mosquito"
 myAdvertisement.connectable = True
-
+ble.name = "Playground"
 ble.start_advertising(myAdvertisement)
 
 # Show version
@@ -80,5 +82,5 @@ while True:
         pass
     print ("Connected")
     while ble.connected:
-        service.sensors = {"light":lightSensor.value}
+        service.sensor = str(lightSensor.value) #{"light":lightSensor.value}
         time.sleep(1.0)
