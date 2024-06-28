@@ -8,7 +8,14 @@ namespace CircuitPlaygroundApp;
 
 public partial class Controls : ContentPage
 {
-    public bool connected { get; private set; } = false;
+    bool connected = false;
+
+    string dataInServiceUuid = "4A98aaaa-1CC4-E7C1-C757-F1267DD021E8";
+    string dataInCharacteristicUuid = "11f836a0-5da3-4bba-815e-d55d2d1c08bc";
+
+    ICharacteristic writeCharacteristic;
+    string dataOutServiceUuid = "69137a96-521e-4f05-b3d2-446d68da158a";
+    string dataOutCharacteristicUuid = "506561bf-2208-4ffb-b0c1-f5e75bec35ad";
 
     public Controls()
     {
@@ -44,6 +51,8 @@ public partial class Controls : ContentPage
 
             try
             {
+                await adapter.StopScanningForDevicesAsync();
+
                 // May need to request location services also
                 StateLbl.Text = "Scanning...";
 
@@ -57,16 +66,21 @@ public partial class Controls : ContentPage
                 {
                     if (dev.Name.Contains("Playground"))
                     {
-                        //await adapter.StopScanningForDevicesAsync(dev);
 
                         DevicesLbl.Text = dev.Name;
+
+                        // Update connected state when it happens
+                        adapter.DeviceConnected += (s, a) => connected = true;
+
                         await adapter.ConnectToDeviceAsync(dev);
                         StateLbl.Text = "Connected";
 
-                        // "4A98aaaa-1CC4-E7C1-C757-F1267DD021E8" from Franklin code
-                        string guid = "11f836a0-5da3-4bba-815e-d55d2d1c08bc";
-                        var service = await dev.GetServiceAsync(Guid.Parse(guid));
-                        var characteristic = await service.GetCharacteristicAsync(Guid.Parse(guid));
+                        var service = await dev.GetServiceAsync(Guid.Parse(dataInServiceUuid));
+                        var characteristic = await service.GetCharacteristicAsync(Guid.Parse(dataInCharacteristicUuid));
+
+                        var writeService = await dev.GetServiceAsync(Guid.Parse(dataOutServiceUuid));
+                        writeCharacteristic = await writeService.GetCharacteristicAsync(Guid.Parse(dataOutCharacteristicUuid));
+
                         characteristic.ValueUpdated += (o, args) =>
                         {
                             MainThread.BeginInvokeOnMainThread(() =>
@@ -89,8 +103,18 @@ public partial class Controls : ContentPage
         }
 
     }
-    private async void OnScanClicked(object sender, EventArgs e)
+    private void OnActivateClicked(object sender, EventArgs e)
     {
-         Connect();
+        if (connected)
+        {
+            writeCharacteristic.WriteAsync(new byte[] { 65 });
+        }
+    }
+    private void OnDeactivateClicked(object sender, EventArgs e)
+    {
+        if (connected)
+        {
+            writeCharacteristic.WriteAsync(new byte[] { 66 });
+        }
     }
 }

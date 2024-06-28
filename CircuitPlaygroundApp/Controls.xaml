@@ -11,11 +11,19 @@
             HorizontalOptions="Center" />
         
         <Button
-                x:Name="ScanBtn"
-                Text="Scan" 
-                SemanticProperties.Hint="Start scanning"
-                Clicked="OnScanClicked"
+                x:Name="OnBtn"
+                Text="Activate Output" 
+                SemanticProperties.Hint="On"
+                Clicked="OnActivateClicked"
                 HorizontalOptions="Fill" />
+
+        <Button
+                x:Name="OffBtn"
+                Text="Deactivate Output" 
+                SemanticProperties.Hint="Off"
+                Clicked="OnDeactivateClicked"
+                HorizontalOptions="Fill" />
+        
         <Label 
                 x:Name="DevicesLbl"
                 Text=" Devices " />
