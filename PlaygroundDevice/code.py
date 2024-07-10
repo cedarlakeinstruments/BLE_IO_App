@@ -92,6 +92,8 @@ while True:
     while ble.connected:
         service.sensor = str(lightSensor.value) #{"light":lightSensor.value}
         print (controller.control) 
-        time.sleep(3.0)
+        led.value = True if controller.control == 65 else False
+        time.sleep(0.1)
+
         
     print ("Disconnected")

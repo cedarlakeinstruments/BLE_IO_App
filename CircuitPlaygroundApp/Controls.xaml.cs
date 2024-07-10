@@ -66,14 +66,31 @@ public partial class Controls : ContentPage
                 {
                     if (dev.Name.Contains("Playground"))
                     {
-
                         DevicesLbl.Text = dev.Name;
-
                         // Update connected state when it happens
-                        adapter.DeviceConnected += (s, a) => connected = true;
+                        adapter.DeviceConnected += (s, a) =>
+                        {
+                            connected = true;
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                OnBtn.IsEnabled = true;
+                                OffBtn.IsEnabled = true;
+                                StateLbl.Text = "Connected";
+                            });
+                        };
+
+                        adapter.DeviceDisconnected += (s, a) =>
+                        {
+                            connected = false;
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                OnBtn.IsEnabled = false;
+                                OffBtn.IsEnabled = false;
+                                StateLbl.Text = "Disconnected";
+                            });
+                        };
 
                         await adapter.ConnectToDeviceAsync(dev);
-                        StateLbl.Text = "Connected";
 
                         var service = await dev.GetServiceAsync(Guid.Parse(dataInServiceUuid));
                         var characteristic = await service.GetCharacteristicAsync(Guid.Parse(dataInCharacteristicUuid));
@@ -107,7 +124,7 @@ public partial class Controls : ContentPage
     {
         if (connected)
         {
-            writeCharacteristic.WriteAsync(new byte[] { 65 });
+            writeCharacteristic.WriteAsync( new byte[] { 65 });
         }
     }
     private void OnDeactivateClicked(object sender, EventArgs e)

@@ -15,14 +15,18 @@
                 Text="Activate Output" 
                 SemanticProperties.Hint="On"
                 Clicked="OnActivateClicked"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill" 
+                IsEnabled="False"
+                Margin="5"/>
 
         <Button
                 x:Name="OffBtn"
                 Text="Deactivate Output" 
                 SemanticProperties.Hint="Off"
                 Clicked="OnDeactivateClicked"
-                HorizontalOptions="Fill" />
+                HorizontalOptions="Fill" 
+                IsEnabled="False"
+                Margin="5"/>
         
         <Label 
                 x:Name="DevicesLbl"
