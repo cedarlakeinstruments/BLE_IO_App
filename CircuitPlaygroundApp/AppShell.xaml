@@ -6,15 +6,15 @@
     xmlns:local="clr-namespace:CircuitPlaygroundApp"
     Shell.FlyoutBehavior="Disabled"
     Title="CircuitPlaygroundApp">
-    <TabBar>
+    <!-- <TabBar>
         <ShellContent
         Title="Home"
         ContentTemplate="{DataTemplate local:MainPage}"
-        Route="MainPage" />
-
+        Route="MainPage" />>
+-->
     <ShellContent
             Title="Device"
             ContentTemplate="{DataTemplate local:Controls}"
              Route="Controls" />
-    </TabBar>
+    <!-- </TabBar> -->
 </Shell>

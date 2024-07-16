@@ -23,7 +23,7 @@ public partial class Controls : ContentPage
         Connect();
     }
 
-    async void Connect()
+    async Task Connect()
     {
         PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
         if (status != PermissionStatus.Granted)
@@ -51,6 +51,7 @@ public partial class Controls : ContentPage
 
             try
             {
+                ActivityConnecting.IsRunning = true;
                 await adapter.StopScanningForDevicesAsync();
 
                 // May need to request location services also
@@ -59,14 +60,16 @@ public partial class Controls : ContentPage
                 List<IDevice> deviceList = new List<IDevice>();
                 adapter.DeviceDiscovered += (s, a) => deviceList.Add(a.Device);
                 adapter.ScanTimeout = 10000;
+
+
                 await adapter.StartScanningForDevicesAsync();
+
                 StateLbl.Text = "Scan done";
 
                 foreach (IDevice dev in deviceList)
                 {
                     if (dev.Name.Contains("Playground"))
                     {
-                        DevicesLbl.Text = dev.Name;
                         // Update connected state when it happens
                         adapter.DeviceConnected += (s, a) =>
                         {
@@ -103,13 +106,20 @@ public partial class Controls : ContentPage
                             MainThread.BeginInvokeOnMainThread(() =>
                             {
                                 byte[] v = args.Characteristic.Value;
-                                DataLbl.Text = String.Format("Light intensity {0}", System.Text.Encoding.ASCII.GetString(v));
+                                DataLbl.Text = System.Text.Encoding.ASCII.GetString(v);
                             });
                         };
 
                         await characteristic.StartUpdatesAsync();
                         break;
                     }
+                }
+
+                ActivityConnecting.IsRunning = false;
+                if (!connected)
+                {
+                    ConnectBtn.IsVisible = true;
+                    StateLbl.Text = "No devices found";
                 }
 
             }
@@ -120,8 +130,15 @@ public partial class Controls : ContentPage
         }
 
     }
-    private void OnActivateClicked(object sender, EventArgs e)
+
+
+    private async void OnActivateClicked(object sender, EventArgs e)
     {
+        if (!connected)
+        {
+            await Connect();
+        }
+
         if (connected)
         {
             writeCharacteristic.WriteAsync( new byte[] { 65 });
@@ -132,6 +149,14 @@ public partial class Controls : ContentPage
         if (connected)
         {
             writeCharacteristic.WriteAsync(new byte[] { 66 });
+        }
+    }
+
+    private async void OnConnectClicked(object sender, EventArgs e)
+    {
+        if (!connected)
+        {
+            await Connect();
         }
     }
 }

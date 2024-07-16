@@ -2,37 +2,54 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CircuitPlaygroundApp.Controls"
-             Title="Controls">
+             Title="Output Control">
+    
     <VerticalStackLayout>
         <Label 
             x:Name="DataLbl"
-            Text="Welcome to .NET MAUI!"
+            FontSize="Medium"
+            Text=" "
             VerticalOptions="Center" 
             HorizontalOptions="Center" />
         
-        <Button
-                x:Name="OnBtn"
-                Text="Activate Output" 
-                SemanticProperties.Hint="On"
-                Clicked="OnActivateClicked"
-                HorizontalOptions="Fill" 
-                IsEnabled="False"
-                Margin="5"/>
-
-        <Button
-                x:Name="OffBtn"
-                Text="Deactivate Output" 
-                SemanticProperties.Hint="Off"
-                Clicked="OnDeactivateClicked"
-                HorizontalOptions="Fill" 
-                IsEnabled="False"
-                Margin="5"/>
+        <HorizontalStackLayout>
+            <Button
+                    x:Name="OnBtn"
+                    BackgroundColor="Red"
+                    Text="Turn On" 
+                    SemanticProperties.Hint="On"
+                    Clicked="OnActivateClicked"
+                    HorizontalOptions="Center" 
+                    IsEnabled="False"
+                    Margin="5"/>
+            
+            <ActivityIndicator x:Name="ActivityConnecting" />
+            
+            <Button
+                    x:Name="OffBtn"
+                    BackgroundColor="Green"
+                    Text="Turn Off" 
+                    SemanticProperties.Hint="Off"
+                    Clicked="OnDeactivateClicked"
+                    HorizontalOptions="Center" 
+                    IsEnabled="False"
+                    Margin="5"/>
+        </HorizontalStackLayout>
         
-        <Label 
-                x:Name="DevicesLbl"
-                Text=" Devices " />
-        <Label 
-                x:Name="StateLbl"
-                Text="Disconnected" />
+        <HorizontalStackLayout Margin="5">
+            
+            <Label 
+                    x:Name="StateLbl"
+                    Text="Disconnected" 
+                VerticalOptions="Center"/>
+            <Button
+            x:Name="ConnectBtn"
+                Margin="20,5,5,5"
+            Text="Search" 
+            SemanticProperties.Hint="Off"
+            Clicked="OnConnectClicked"
+            HorizontalOptions="End" 
+            IsVisible="False" />
+        </HorizontalStackLayout>
     </VerticalStackLayout>
 </ContentPage>
