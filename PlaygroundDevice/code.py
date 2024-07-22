@@ -36,6 +36,16 @@ BRIGHTNESS = 0.7
 
 NUM_PIXELS = 10
 
+class SwitchInputService(Service):
+    uuid = VendorUUID("c6c7a038-65ca-46d8-853f-d30f6da2ee48")
+    buttonStatus = Uint8Characteristic(uuid = VendorUUID("7a91aebe-de90-4135-9a3e-23e3a0b554fd"), 
+        properties = Characteristic.READ | Characteristic.NOTIFY,
+        )
+
+    def __init__(self, service=None):
+        super().__init__(service=service)
+        self.connectable = True
+        
 class ControlService(Service):
     uuid = VendorUUID("69137a96-521e-4f05-b3d2-446d68da158a")
     control = Uint8Characteristic(uuid = VendorUUID("506561bf-2208-4ffb-b0c1-f5e75bec35ad"), 
@@ -67,6 +77,10 @@ light = lightSensor.value
 led = digitalio.DigitalInOut(board.D13)
 led.switch_to_output()
 
+# Read D5 pushbutton
+buttonD5 = digitalio.DigitalInOut(board.D5)
+buttonD5.switch_to_input()
+
 # Clear LEDs
 pixels.fill((0,0,0))
 
@@ -74,6 +88,7 @@ pixels.fill((0,0,0))
 ble = adafruit_ble.BLERadio()
 service = SensorService()
 controller = ControlService()
+buttonStatus = SwitchInputService()
 
 # Advertising config
 myAdvertisement = ProvideServicesAdvertisement(service)
@@ -87,13 +102,19 @@ print ("PlaygroundDevice v1.0")
 # Run sequence
 while True: 
     while not ble.connected:
+        time.sleep(0.1)
         pass
     print ("Connected")
     while ble.connected:
         service.sensor = str(lightSensor.value) 
+
         print (controller.control) 
         led.value = True if controller.control == 65 else False
+
+        buttonStatus.buttonStatus = buttonD5.value
+        
         time.sleep(0.1)
 
         
     print ("Disconnected")
+    ble.start_advertising(myAdvertisement)

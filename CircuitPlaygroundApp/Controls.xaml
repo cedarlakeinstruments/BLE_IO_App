@@ -2,19 +2,34 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CircuitPlaygroundApp.Controls"
-             Title="Output Control">
-    
-    <VerticalStackLayout>
-        <Label 
+             Title="Output Control" >
+
+    <VerticalStackLayout HorizontalOptions="Center">
+        <HorizontalStackLayout>
+            <Label 
             x:Name="DataLbl"
             FontSize="Medium"
             Text=" "
             VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-        
+            HorizontalOptions="Center" 
+            Margin="5"
+            />
+
+            <Label 
+            x:Name="SwitchLbl"
+            FontSize="Medium"
+            Text="111"
+            VerticalOptions="Center" 
+            HorizontalOptions="Center"
+            Margin="5"
+            />
+        </HorizontalStackLayout>
+
         <HorizontalStackLayout>
             <Button
                     x:Name="OnBtn"
+                    HeightRequest="100"
+                    WidthRequest="100"
                     BackgroundColor="Red"
                     Text="Turn On" 
                     SemanticProperties.Hint="On"
@@ -27,6 +42,8 @@
             
             <Button
                     x:Name="OffBtn"
+                    HeightRequest="100"
+                    WidthRequest="100"
                     BackgroundColor="Green"
                     Text="Turn Off" 
                     SemanticProperties.Hint="Off"
@@ -35,7 +52,7 @@
                     IsEnabled="False"
                     Margin="5"/>
         </HorizontalStackLayout>
-        
+
         <HorizontalStackLayout Margin="5">
             
             <Label 

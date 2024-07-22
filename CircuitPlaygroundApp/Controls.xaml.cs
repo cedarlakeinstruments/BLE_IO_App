@@ -23,6 +23,10 @@ public partial class Controls : ContentPage
         Connect();
     }
 
+    /// <summary>
+    /// Manages connecting to device and handling connection lost and data updates
+    /// </summary>
+    /// <returns></returns>
     async Task Connect()
     {
         PermissionStatus status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
@@ -82,7 +86,8 @@ public partial class Controls : ContentPage
                             });
                         };
 
-                        adapter.DeviceDisconnected += (s, a) =>
+                        /// Allow reconnect if connection lost
+                        adapter.DeviceConnectionLost += (s,a) =>
                         {
                             connected = false;
                             MainThread.BeginInvokeOnMainThread(() =>
@@ -93,8 +98,10 @@ public partial class Controls : ContentPage
                             });
                         };
 
+
                         await adapter.ConnectToDeviceAsync(dev);
 
+                        // Hook up to provided services
                         var service = await dev.GetServiceAsync(Guid.Parse(dataInServiceUuid));
                         var characteristic = await service.GetCharacteristicAsync(Guid.Parse(dataInCharacteristicUuid));
 
@@ -110,7 +117,27 @@ public partial class Controls : ContentPage
                             });
                         };
 
+                        // Get data notification
                         await characteristic.StartUpdatesAsync();
+
+                        // Switch input
+                        const string buttonServiceUuid = "c6c7a038-65ca-46d8-853f-d30f6da2ee48";
+                        const string buttonCharacteristicUuid = "7a91aebe-de90-4135-9a3e-23e3a0b554fd";
+
+                        var buttonService = await dev.GetServiceAsync(Guid.Parse(buttonServiceUuid));
+                        var buttonCharacteristic = await buttonService.GetCharacteristicAsync(Guid.Parse(buttonCharacteristicUuid));
+                        // Button input handler
+                        buttonCharacteristic.ValueUpdated += (o, args) =>
+                        {
+                            MainThread.BeginInvokeOnMainThread(() =>
+                            {
+                                byte[] v = args.Characteristic.Value;
+                                SwitchLbl.Text = v[0] == 1 ? "On" : "Off"; // System.Text.Encoding.ASCII.GetString(v);
+                            });
+                        };
+
+                        await buttonCharacteristic.StartUpdatesAsync();
+
                         break;
                     }
                 }
@@ -158,5 +185,10 @@ public partial class Controls : ContentPage
         {
             await Connect();
         }
+    }
+
+    void OnSliderValueChanged(object sender, EventArgs e)
+    {
+
     }
 }
